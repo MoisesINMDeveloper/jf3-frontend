@@ -1,0 +1,114 @@
+{
+  "aliados": [
+    {
+      "id": 1,
+      "name": "Aliado Ejemplo",
+      "image": "https://example.com/logo.png"
+    }
+  ],
+  "categories": [
+    {
+      "id": 1,
+      "name": "Comida Rápida",
+      "aliadoId": 1
+    },
+    {
+      "id": 2,
+      "name": "Postres",
+      "aliadoId": 1
+    }
+  ],
+  "products": [
+    {
+      "id": 1,
+      "title": "Hamburguesa Especial",
+      "price": 8.99,
+      "images": ["https://example.com/hamburguesa.png"],
+      "description": "Deliciosa hamburguesa con queso y bacon",
+      "categoryId": 1,
+      "aliadoId": 1
+    },
+    {
+      "id": 2,
+      "title": "Helado de Vainilla",
+      "price": 3.50,
+      "images": ["https://example.com/helado.png"],
+      "description": "Helado cremoso de vainilla",
+      "categoryId": 2,
+      "aliadoId": 1
+    }
+  ],
+  "deliveryOptions": [
+    {
+      "id": 1,
+      "name": "Zona Centro",
+      "fee": 5.50,
+      "aliadoId": 1
+    },
+    {
+      "id": 2,
+      "name": "Zona Norte",
+      "fee": 7.00,
+      "aliadoId": 1
+    },
+    {
+      "id": 3,
+      "name": "Zona Sur",
+      "fee": 6.00,
+      "aliadoId": 1
+    }
+  ],
+  "orders": [
+    {
+      "id": 1,
+      "clientName": "Juan Perez",
+      "clientPhone": "+584123456789",
+      "totalAmount": 20.50,
+      "status": "PENDING",
+      "aliadoId": 1
+    }
+  ],
+  "orderItems": [
+    {
+      "id": 1,
+      "quantity": 2,
+      "price": 8.99,
+      "productId": 1,
+      "orderId": 1
+    },
+    {
+      "id": 2,
+      "quantity": 1,
+      "price": 3.50,
+      "productId": 2,
+      "orderId": 1
+    }
+  ],
+  "payments": [
+    {
+      "id": 1,
+      "method": "Tarjeta",
+      "amount": 20.50,
+      "reference": "ABC123",
+      "verified": false,
+      "status": "pending",
+      "orderId": 1
+    }
+  ],
+  "paydates": [
+    {
+      "id": 1,
+      "bank": "Banco de Ejemplo",
+      "code": "001",
+      "cedula": "V12345678",
+      "phone": "+584123456789"
+    }
+  ],
+  "userAdmins": [
+    {
+      "id": 1,
+      "username": "admin",
+      "password": "password123"
+    }
+  ]
+}
