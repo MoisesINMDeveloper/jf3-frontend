@@ -4,18 +4,20 @@ import {
   createPaydate,
   updatePaydate,
   deletePaydate,
+  type Paydate,
+  type PaydateResponse,
 } from "../constant/Api";
 import { InputLogin } from "./atoms/input";
 
 export const PanelAdminMobilePayment = () => {
-  const [paymentOptions, setPaymentOptions] = useState<any[]>([]);
-  const [newPaymentOption, setNewPaymentOption] = useState({
+  const [paymentOptions, setPaymentOptions] = useState<Paydate[]>([]);
+  const [newPaymentOption, setNewPaymentOption] = useState<Omit<Paydate, "id">>({
     bank: "",
     code: "",
     cedula: "",
     phone: "",
   });
-  const [editPaymentOption, setEditPaymentOption] = useState<any>(null);
+  const [editPaymentOption, setEditPaymentOption] = useState<Paydate | null>(null);
 
   useEffect(() => {
     fetchPaymentOptions();
@@ -23,8 +25,12 @@ export const PanelAdminMobilePayment = () => {
 
   const fetchPaymentOptions = async () => {
     try {
-      const options = await getAllPaydates();
-      setPaymentOptions(options);
+      const res = await getAllPaydates();
+      const paydates =
+        Array.isArray(res)
+          ? (res as PaydateResponse[]).flatMap((r) => r.paydates ?? [])
+          : ((res as PaydateResponse).paydates ?? []);
+      setPaymentOptions(paydates);
     } catch (error) {
       console.error("Error fetching payment options:", error);
     }
@@ -41,13 +47,9 @@ export const PanelAdminMobilePayment = () => {
   };
 
   const handleUpdatePaymentOption = async () => {
+    if (!editPaymentOption) return;
     try {
-      await updatePaydate(editPaymentOption.id, {
-        bank: editPaymentOption.bank,
-        code: editPaymentOption.code,
-        cedula: editPaymentOption.cedula,
-        phone: editPaymentOption.phone,
-      });
+      await updatePaydate(editPaymentOption.id, editPaymentOption);
       fetchPaymentOptions();
       setEditPaymentOption(null);
     } catch (error) {
@@ -78,19 +80,22 @@ export const PanelAdminMobilePayment = () => {
     { name: "code", placeholder: "Código" },
     { name: "cedula", placeholder: "Cédula" },
     { name: "phone", placeholder: "Teléfono" },
-  ];
+  ] as const;
 
   return (
     <div className="mx-2 mb-4 p-4 bg-transparent border-primary border-2 rounded-sm">
       <h1 className="text-white text-2xl text-center mb-4">
         Administrador de Pago Móvil
       </h1>
+
+      {/* Formulario agregar / editar */}
       <div className="mb-6 flex flex-col justify-center items-center">
         <h2 className="text-white text-center text-xl mb-6">
           {editPaymentOption
             ? "Editar opción de pago móvil"
             : "Agregar nueva opción de pago móvil"}
         </h2>
+
         <div className="flex flex-wrap justify-center gap-4">
           {inputFields.map((field) => (
             <InputLogin
@@ -100,13 +105,14 @@ export const PanelAdminMobilePayment = () => {
               placeholder={field.placeholder}
               value={
                 editPaymentOption
-                  ? editPaymentOption[field.name as keyof typeof editPaymentOption]
-                  : newPaymentOption[field.name as keyof typeof newPaymentOption]
+                  ? editPaymentOption[field.name]
+                  : newPaymentOption[field.name]
               }
               onChange={handleInputChange}
             />
           ))}
         </div>
+
         <div className="flex justify-center mt-5">
           {editPaymentOption ? (
             <button
@@ -126,31 +132,38 @@ export const PanelAdminMobilePayment = () => {
         </div>
       </div>
 
+      {/* Listado de opciones */}
       <div className="flex flex-col items-center justify-center gap-6">
         <h2 className="text-white text-xl mb-2">Opciones de pago móvil</h2>
-        {paymentOptions.map((option: any) => (
-          <div key={option.id}>
-            <div className="bg-transparent border-primary border-2 rounded-md p-4 mb-2 text-white flex flex-col gap-4">
-              <p>
-                {option.bank} - {option.code} - {option.cedula} - {option.phone}
-              </p>
+        {paymentOptions.length > 0 ? (
+          paymentOptions.map((option) => (
+            <div key={option.id}>
+              <div className="bg-transparent border-primary border-2 rounded-md p-4 mb-2 text-white flex flex-col gap-4">
+                <p>
+                  {option.bank} - {option.code} - {option.cedula} - {option.phone}
+                </p>
+              </div>
+              <div className="flex justify-center mt-5 gap-4">
+                <button
+                  className="bg-tertiary text-white p-2 rounded mr-2 w-24"
+                  onClick={() => setEditPaymentOption(option)}
+                >
+                  Editar
+                </button>
+                <button
+                  className="bg-redButton text-white p-2 rounded w-24"
+                  onClick={() => handleDeletePaymentOption(option.id)}
+                >
+                  Eliminar
+                </button>
+              </div>
             </div>
-            <div className="flex justify-center mt-5 gap-4">
-              <button
-                className="bg-tertiary text-white p-2 rounded mr-2 w-24"
-                onClick={() => setEditPaymentOption(option)}
-              >
-                Editar
-              </button>
-              <button
-                className="bg-redButton text-white p-2 rounded w-24"
-                onClick={() => handleDeletePaymentOption(option.id)}
-              >
-                Eliminar
-              </button>
-            </div>
-          </div>
-        ))}
+          ))
+        ) : (
+          <p className="text-gray-400 text-center">
+            No hay opciones de pago móvil registradas.
+          </p>
+        )}
       </div>
     </div>
   );

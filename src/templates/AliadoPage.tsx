@@ -6,7 +6,7 @@ import { getAliados } from "../constant/Api";
 import type { Product } from "../constant/data";
 
 const AliadoPage = () => {
-  const { id } = useParams(); // ✅ Lee el id desde la URL dinámica
+  const { id } = useParams(); 
   const aliadoId = Number(id);
   const [products, setProducts] = useState<Product[]>([]);
   const { addToCart } = useCart();
@@ -14,7 +14,7 @@ const AliadoPage = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const data = await getAliados(); // trae todos los aliados con sus productos
+        const data = await getAliados(); 
         const aliado = data.aliados.find((a: any) => a.id === aliadoId);
         if (aliado && aliado.products) {
           setProducts(aliado.products);
@@ -31,14 +31,16 @@ const AliadoPage = () => {
 
   return (
     <section className="flex flex-col items-center pt-20 w-full">
-      <h2 className="text-2xl font-bold mb-6 text-secundary">Productos del aliado</h2>
-      <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4">
+      <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-6 text-secundary text-center">
+        Productos del aliado
+      </h2>
+      <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4">
         {products.length > 0 ? (
           products.map((product) => (
             <Menu key={product.id} products={[product]} addToCart={addToCart} />
           ))
         ) : (
-          <p className="text-center col-span-full">
+          <p className="text-center col-span-full text-gray-400">
             No hay productos disponibles para este aliado.
           </p>
         )}

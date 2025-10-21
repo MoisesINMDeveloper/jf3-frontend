@@ -27,18 +27,33 @@ const PanelAdminCategories = () => {
   const [aliados, setAliados] = useState<Aliado[]>([]);
 
   useEffect(() => {
-    fetchCategories();
     fetchAliados();
+    fetchCategories();
   }, []);
 
-  const fetchCategories = async () => {
+  // 🔁 Si cambia el aliado, recargamos las categorías filtradas
+  useEffect(() => {
+    if (selectedAliadoId !== null) {
+      fetchCategories(selectedAliadoId);
+    } else {
+      fetchCategories();
+    }
+  }, [selectedAliadoId]);
+
+  const fetchCategories = async (aliadoId?: number) => {
     try {
       const fetchedCategories = await getAllCategories();
       fetchedCategories.sort((a: Category, b: Category) => {
         if (a.aliadoId !== b.aliadoId) return a.aliadoId - b.aliadoId;
         return a.name.localeCompare(b.name);
       });
-      setCategories(fetchedCategories);
+
+      // 🔹 Filtrar solo las del aliado seleccionado (si existe)
+      const filtered = aliadoId
+        ? fetchedCategories.filter((c) => c.aliadoId === aliadoId)
+        : fetchedCategories;
+
+      setCategories(filtered);
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
@@ -47,7 +62,7 @@ const PanelAdminCategories = () => {
   const fetchAliados = async () => {
     try {
       const fetchedAliados = await getAliados();
-      setAliados(fetchedAliados);
+      setAliados(fetchedAliados.aliados);
     } catch (error) {
       console.error("Error fetching aliados:", error);
     }
@@ -59,8 +74,7 @@ const PanelAdminCategories = () => {
     try {
       await createCategory(newCategory, selectedAliadoId);
       setNewCategory("");
-      setSelectedAliadoId(null);
-      fetchCategories();
+      fetchCategories(selectedAliadoId);
     } catch (error) {
       console.error("Error creating category:", error);
     }
@@ -74,12 +88,8 @@ const PanelAdminCategories = () => {
         name: editCategory.name,
         aliadoId: editCategory.aliadoId,
       });
-      await updateCategory(editCategory.id, {
-        name: editCategory.name,
-        aliadoId: editCategory.aliadoId,
-      });
       setEditCategory(null);
-      fetchCategories();
+      fetchCategories(selectedAliadoId ?? editCategory.aliadoId);
     } catch (error) {
       console.error("Error updating category:", error);
     }
@@ -88,7 +98,7 @@ const PanelAdminCategories = () => {
   const handleRemoveCategory = async (categoryId: number) => {
     try {
       await deleteCategory(categoryId);
-      fetchCategories();
+      fetchCategories(selectedAliadoId ?? undefined);
     } catch (error) {
       console.error("Error deleting category:", error);
     }
@@ -126,14 +136,14 @@ const PanelAdminCategories = () => {
             }
             onChange={(e) => {
               const id = Number(e.target.value);
-              editCategory
-                ? setEditCategory({ ...editCategory, aliadoId: id })
-                : setSelectedAliadoId(id);
+              if (editCategory) {
+                setEditCategory({ ...editCategory, aliadoId: id });
+              } else {
+                setSelectedAliadoId(id);
+              }
             }}
           >
-            <option value="" disabled>
-              Selecciona un aliado
-            </option>
+            <option value="">Selecciona un aliado</option>
             {aliados.map((a) => (
               <option key={a.id} value={a.id}>
                 {a.name}
@@ -153,33 +163,44 @@ const PanelAdminCategories = () => {
       </div>
 
       <h2 className="text-white text-xl mb-2 text-center">Categorías</h2>
+
       <div className="flex flex-wrap items-start justify-center gap-6 mx-4">
-        {categories.map((category) => (
-          <div key={category.id} className="flex flex-col items-center">
-            <div className="bg-transparent border-primary border-2 rounded-md p-4 mb-2 text-white flex flex-col gap-2 w-64">
-              <p className="font-bold">{category.name}</p>
-              <p className="text-gray-400 text-sm">
-                Aliado:{" "}
-                {aliados.find((a) => a.id === Number(category.aliadoId))
-                  ?.name ?? "N/A"}
-              </p>
+        {categories.length > 0 ? (
+          categories.map((category) => (
+            <div key={category.id} className="flex flex-col items-center">
+              <div className="bg-transparent border-primary border-2 rounded-md p-4 mb-2 text-white flex flex-col gap-2 w-64">
+                <p className="font-bold">{category.name}</p>
+                <p className="text-gray-400 text-sm">
+                  Aliado:{" "}
+                  {
+                    aliados.find((a) => a.id === category.aliadoId)?.name ??
+                    "N/A"
+                  }
+                </p>
+              </div>
+              <div className="flex justify-center my-2 gap-4">
+                <button
+                  className="bg-greenButton text-white p-2 rounded w-24"
+                  onClick={() => setEditCategory(category)}
+                >
+                  Editar
+                </button>
+                <button
+                  className="bg-redButton text-white p-2 rounded w-24"
+                  onClick={() => handleRemoveCategory(category.id)}
+                >
+                  Eliminar
+                </button>
+              </div>
             </div>
-            <div className="flex justify-center my-2 gap-4">
-              <button
-                className="bg-greenButton text-white p-2 rounded w-24"
-                onClick={() => setEditCategory(category)}
-              >
-                Editar
-              </button>
-              <button
-                className="bg-redButton text-white p-2 rounded w-24"
-                onClick={() => handleRemoveCategory(category.id)}
-              >
-                Eliminar
-              </button>
-            </div>
-          </div>
-        ))}
+          ))
+        ) : (
+          <p className="text-gray-400 text-center">
+            {selectedAliadoId
+              ? "Este aliado no tiene categorías registradas."
+              : "Selecciona un aliado para ver sus categorías."}
+          </p>
+        )}
       </div>
     </div>
   );

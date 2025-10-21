@@ -10,19 +10,30 @@ const ProductList = ({ products = [], handleDelete, handleUpdate }: ProductListP
   // Si products viene en una estructura tipo { data: [...] }
   const list = Array.isArray(products) ? products : products?.data || [];
 
+
   return (
     <div className="grid grid-cols-3 gap-4">
-      {list.length === 0 ? (
-        <p className="col-span-3 text-center text-gray-500">No hay productos disponibles</p>
-      ) : (
-        list.map((product: Product) => (
-          <div key={product.id} className="border p-2 rounded">
-            <h3>{product.title}</h3>
-            <p>{product.description}</p>
-            <p>${product.price}</p>
+      {list.map((product: Product, index: any) => (
+        <div
+          key={`${product.id}-${index}`} // 🔑 key única
+          className="border p-2 rounded flex flex-col items-center gap-2 bg-gray-800 text-white"
+        >
+          {product.images && product.images.length > 0 && (
+            <img
+              src={product.images[0]}
+              alt={product.title}
+              className="w-full h-40 object-cover rounded"
+            />
+          )}
+
+          <h3 className="font-bold">{product.title}</h3>
+          <p className="text-sm text-gray-300">{product.description}</p>
+          <p className="font-semibold">${product.price}</p>
+
+          <div className="flex gap-2 mt-2">
             <button
               onClick={() => handleUpdate(product)}
-              className="bg-blue-500 text-white px-2 py-1 rounded mr-2"
+              className="bg-blue-500 text-white px-2 py-1 rounded"
             >
               Editar
             </button>
@@ -33,8 +44,9 @@ const ProductList = ({ products = [], handleDelete, handleUpdate }: ProductListP
               Eliminar
             </button>
           </div>
-        ))
-      )}
+        </div>
+      ))
+      }
     </div>
   );
 };

@@ -47,7 +47,10 @@ export interface Paydate {
   cedula: string;
   phone: string;
 }
-
+export interface PaydateResponse {
+  status: number;
+  paydates: Paydate[];
+}
 // DeliveryOption
 export interface DeliveryOption {
   id: number;
@@ -172,7 +175,7 @@ export const getCategoryById = async (id: number): Promise<Category> => {
 };
 
 export const createCategory = async (name: string, aliadoId: number) => {
-  const response = await fetch(`${API_URL}/categories`, {
+  const response = await fetch(`${API_URL}/category`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ name, aliadoId }),
@@ -233,9 +236,9 @@ export const deleteProduct = async (id: number): Promise<{ success: boolean }> =
 };
 
 //----------------- PAYDATES -----------------//
-export const getAllPaydates = async (): Promise<Paydate[]> => {
-  const response: AxiosResponse<Paydate[]> = await axios.get(`${API_URL}/paydates`);
-  return response.data;
+export const getAllPaydates = async (): Promise<PaydateResponse[]> => {
+  const {data} = await axios.get(`${API_URL}/paydates`);
+  return data;
 };
 
 export const getPaydateById = async (id: number): Promise<Paydate> => {
