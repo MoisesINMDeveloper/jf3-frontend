@@ -10,7 +10,7 @@ interface AliadoCardProps {
 const AliadoCard: React.FC<AliadoCardProps> = ({ id, name, image, onClick }) => (
   <div
     onClick={() => onClick(id)}
-    className="cursor-pointer border rounded shadow p-4 text-center hover:scale-105 transition"
+    className="cursor-pointer border border-secundary rounded shadow p-4 text-center hover:scale-105 transition"
   >
     <img
       src={image} // 🔹 Aquí usamos la imagen dinámica

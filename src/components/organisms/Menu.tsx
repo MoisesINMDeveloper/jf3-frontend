@@ -9,11 +9,16 @@ const Menu = ({
   addToCart: (product: Product) => void;
 }) => {
   return (
-    <div className="flex justify-center">
+    <div
+      className="flex flex-wrap justify-center items-start gap-5 
+             w-full max-w-[100vw] p-4 overflow-x-hidden "
+    >
       {products.map((product: Product) => (
-        <div className="my-4 w-full max-w-sm sm:max-w-[280px]" key={product.id}>
-          <ProductDetail product={product} onAddToCart={() => addToCart(product)} />
-        </div>
+        <ProductDetail
+          key={product.id}
+          product={product}
+          onAddToCart={() => addToCart(product)}
+        />
       ))}
     </div>
   );

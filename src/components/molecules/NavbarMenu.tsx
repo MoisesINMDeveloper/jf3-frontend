@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { IoMdMenu, IoMdClose } from 'react-icons/io';
-import { useLocation } from 'react-router-dom';  // Importar useLocation
+import { useLocation } from 'react-router-dom';
 import ItemsMenu from '../atoms/ItemsMenu';
-import ExtraInfo from '../atoms/ExtraInfo';
 import SideBar from './sidebar';
 
 interface MenuNavbarProps {
@@ -38,28 +37,34 @@ const MenuNavbar = ({ onClick, setActiveView }: MenuNavbarProps) => {
     };
   }, [isMenuOpen]);
 
+  const isAdminPage = location.pathname === '/administration-panel';
+
   return (
     <div ref={menuRef} className="z-50">
+      {/* Botón de menú móvil */}
       <div className="block lg:hidden">
         <button className="w-auto h-auto mb-2" onClick={handleNavbarMenuClick}>
           {isMenuOpen ? (
-            <IoMdClose className=" w-8 h-8 text-secundary transition-all duration-1000 transform rotate-190" />
+            <IoMdClose className="w-8 h-8 text-secundary transition-all duration-300" />
           ) : (
-            <IoMdMenu className=" w-8 h-8 text-secundary transition-all duration-1000 transform rotate-0" />
+            <IoMdMenu className="w-8 h-8 text-secundary transition-all duration-300" />
           )}
         </button>
+
         {isMenuOpen && (
           <>
-            {location.pathname === '/administration-panel' && (
+            {isAdminPage ? (
               <SideBar setActiveView={setActiveView} />
+            ) : (
+              <ItemsMenu />
             )}
-            {location.pathname === '/' && <ItemsMenu />}
-
           </>
         )}
       </div>
-      <div className='hidden lg:block'>
-            <ExtraInfo />
+
+      {/* Menú grande para escritorio */}
+      <div className="hidden lg:block">
+        {isAdminPage ? <SideBar setActiveView={setActiveView} /> : <ItemsMenu />}
       </div>
     </div>
   );

@@ -130,7 +130,7 @@ const PanelAdminCategories = () => {
 
           {/* Select de Aliado */}
           <select
-            className="w-64 p-2 rounded border border-gray-700 bg-gray-800 text-white outline-none"
+            className="w-64 p-2 rounded border border-gray-700 bg-white text-black outline-none"
             value={
               editCategory ? editCategory.aliadoId : selectedAliadoId ?? ""
             }
@@ -153,8 +153,8 @@ const PanelAdminCategories = () => {
 
           <button
             className={`${
-              editCategory ? "bg-greenButton" : "bg-primary"
-            } text-white p-2 rounded w-24`}
+              editCategory ? "bg-green-400" : "bg-secundary"
+            } text-black  p-2 rounded w-24`}
             onClick={editCategory ? handleUpdateCategory : handleAddCategory}
           >
             {editCategory ? "Actualizar" : "Agregar"}
@@ -180,13 +180,13 @@ const PanelAdminCategories = () => {
               </div>
               <div className="flex justify-center my-2 gap-4">
                 <button
-                  className="bg-greenButton text-white p-2 rounded w-24"
+                  className="bg-green-400 text-white p-2 rounded w-24"
                   onClick={() => setEditCategory(category)}
                 >
                   Editar
                 </button>
                 <button
-                  className="bg-redButton text-white p-2 rounded w-24"
+                  className="bg-fourth text-white p-2 rounded w-24"
                   onClick={() => handleRemoveCategory(category.id)}
                 >
                   Eliminar

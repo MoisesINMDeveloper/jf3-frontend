@@ -24,16 +24,29 @@ const PanelAdminProducts = () => {
 
   useEffect(() => {
     const fetchAliados = async () => {
-      try { const data = await getAliados(); setAliados(data.aliados); } 
-      catch (error) { console.error("Error fetching aliados:", error); }
+      try { 
+        const data = await getAliados(); 
+        setAliados(data.aliados); 
+      } catch (error) { 
+        console.error("Error fetching aliados:", error); 
+      }
     };
     fetchAliados();
   }, []);
 
   useEffect(() => {
-    if (!selectedAliadoId) { setCategories([]); setProducts([]); setFilteredProducts([]); return; }
+    if (!selectedAliadoId) { 
+      setCategories([]); 
+      setProducts([]); 
+      setFilteredProducts([]); 
+      return; 
+    }
     const aliadoSeleccionado = aliados.find(a => a.id === selectedAliadoId);
-    if (aliadoSeleccionado) { setCategories(aliadoSeleccionado.categories || []); setProducts(aliadoSeleccionado.products || []); setFilteredProducts(aliadoSeleccionado.products || []); }
+    if (aliadoSeleccionado) { 
+      setCategories(aliadoSeleccionado.categories || []); 
+      setProducts(aliadoSeleccionado.products || []); 
+      setFilteredProducts(aliadoSeleccionado.products || []); 
+    }
   }, [selectedAliadoId, aliados]);
 
   const handleFilter = (categoryId: number | null) => {
@@ -59,18 +72,29 @@ const PanelAdminProducts = () => {
   const handleModalClose = () => { setIsModalOpen(false); setCurrentProduct(null); };
 
   return (
-    <div className="text-white p-4 flex flex-col gap-6 items-center justify-center">
-      <h1 className="text-2xl text-center">Administrador de Productos</h1>
+    <div className="text-white p-4 flex flex-col gap-6 items-center justify-center w-full max-w-[1600px] mx-auto">
+      <h1 className="text-2xl md:text-3xl text-center font-bold mb-4">Administrador de Productos</h1>
 
-      <div className="flex flex-wrap gap-4 justify-center items-center">
-        <select value={selectedAliadoId ?? ""} onChange={(e) => setSelectedAliadoId(Number(e.target.value))} className="bg-black border border-primary p-2 rounded">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 w-full flex-wrap">
+        <select
+          value={selectedAliadoId ?? ""}
+          onChange={(e) => setSelectedAliadoId(Number(e.target.value))}
+          className="bg-black border border-secundary outline-none p-2 rounded min-w-[200px] text-white"
+        >
           <option value="">Selecciona un aliado</option>
           {aliados.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
         </select>
 
         <CategoryFilter categories={categories} activeCategory={activeCategory} handleFilter={handleFilter} />
 
-        {selectedAliadoId && <button className="bg-greenButton text-white px-4 py-2 rounded" onClick={() => setIsCreateModalOpen(true)}>Crear Producto</button>}
+        {selectedAliadoId && (
+          <button
+            className="bg-green-500 hover:bg-green-600 transition-colors text-white px-4 py-2 rounded font-semibold"
+            onClick={() => setIsCreateModalOpen(true)}
+          >
+            Crear Producto
+          </button>
+        )}
       </div>
 
       <ProductList products={filteredProducts} handleDelete={handleDelete} handleUpdate={handleUpdate} />

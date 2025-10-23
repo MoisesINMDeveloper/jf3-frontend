@@ -202,7 +202,7 @@ const PanelAdminDelivery: React.FC = () => {
           </div>
 
           <button
-            className={`${editZone ? "bg-greenButton" : "bg-primary"} text-white p-2 rounded w-24`}
+            className={`${editZone ? "bg-greenButton" : "bg-secundary"} text-black p-2 rounded w-24`}
             onClick={editZone ? handleUpdateZone : handleAddZone}
           >
             {editZone ? "Actualizar" : "Agregar"}
@@ -218,13 +218,13 @@ const PanelAdminDelivery: React.FC = () => {
             {zones.length > 0 ? (
               zones.map((zone: DeliveryOption) => (
                 <div key={zone.id}>
-                  <div className="bg-transparent border-primary border-2 rounded-md p-4 mb-2 text-white flex flex-row gap-4">
+                  <div className="bg-transparent border-gray-500 border-2 rounded-md p-4 mb-2 text-white flex flex-row gap-4">
                     <p>{zone.name}</p>
                     <p>Tarifa: {zone.fee.toFixed(2)}</p>
                   </div>
                   <div className="flex justify-center my-5 gap-4">
                     <button
-                      className="bg-greenButton text-white p-2 rounded mr-2 w-24"
+                      className="bg-green-400 text-white p-2 rounded mr-2 w-24"
                       onClick={() =>
                         setEditZone({
                           id: zone.id,
@@ -237,7 +237,7 @@ const PanelAdminDelivery: React.FC = () => {
                       Editar
                     </button>
                     <button
-                      className="bg-redButton text-white p-2 rounded w-24"
+                      className="bg-fourth text-white p-2 rounded w-24"
                       onClick={() => handleRemoveZone(zone.id)}
                     >
                       Eliminar

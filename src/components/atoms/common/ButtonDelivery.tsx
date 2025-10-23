@@ -1,10 +1,10 @@
 import {MdDeliveryDining} from "react-icons/md";
 
 const ButtonDelivery=({onClick,color}: {onClick: () => void,label?: string; color?: string}) => {
-    return <button className={`  text-fourth  active:text-tertiary flex flex-row border-primary  font-semibold ${color}`} onClick={onClick}>
+    return <button className={`text-secundary  active:text-fourth flex flex-row border-secundary  font-semibold ${color}`} onClick={onClick}>
 
-        <MdDeliveryDining className="w-8 h-8" />
-        <span className=" ">Delivery Service</span>
+        <span className="underline underline-offset-4">Delivery Service</span>
+        <MdDeliveryDining className="w-8 h-8 " />
 
     </button>;
 }

@@ -8,3 +8,17 @@ div#root{
     box-sizing: border-box;
 
 }
+html, body {
+  overflow-x: hidden; /* Previene scroll lateral en todo el sitio */
+}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  overflow-x: hidden;
+  background-color: black; /* opcional */
+}

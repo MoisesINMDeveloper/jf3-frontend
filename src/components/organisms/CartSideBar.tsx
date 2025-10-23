@@ -1,124 +1,218 @@
-import {useEffect,useRef,useState} from 'react';
-import PaymentModal from '../modals/PaymentModal';
+import { useEffect, useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
+import PaymentModal from "../modals/PaymentModal";
 import NotificationComponent from "../modals/Notification";
-import CartCommentsComponent from '../atoms/CartComments';
-import Button from '../atoms/common/Button';
-import CloseCartIcon from '../atoms/CloseCartIcon';
-import CartTotal from '../atoms/CartTotal';
-import CartItem from '../atoms/CartItem';
-import {useCart} from '../../hooks/useCart';
-import data from '../../constant/data';
-import DeliveryOptionModal from '../modals/DeliveryOptionModal';
-import ButtonDelivery from '../atoms/common/ButtonDelivery';
-import {TbBasketCancel} from 'react-icons/tb';
+import CartCommentsComponent from "../atoms/CartComments";
+import Button from "../atoms/common/Button";
+import CloseCartIcon from "../atoms/CloseCartIcon";
+import CartTotal from "../atoms/CartTotal";
+import CartItem from "../atoms/CartItem";
+import { useCart } from "../../hooks/useCart";
+import data from "../../constant/data";
+import DeliveryOptionModal from "../modals/DeliveryOptionModal";
+import ButtonDelivery from "../atoms/common/ButtonDelivery";
+import { TbBasketCancel } from "react-icons/tb";
+import DeliveryWarningModal from "../modals/DeliveryWarningModal";
 
-const CartSidebar=({isOpen,onClose}: {isOpen: boolean; onClose: () => void;}) => {
-    const {cartItems,updateQuantity,removeFromCart}=useCart();
-    const sidebarRef=useRef<HTMLDivElement>(null);
-    const [isModalOpen,setIsModalOpen]=useState(false);
-    const [isNotificationVisible,setIsNotificationVisible]=useState(false);
-    const [comment,setComment]=useState("");
-    const [deliveryFee,setDeliveryFee]=useState<number>(0);
-    const [deliveryLocation,setDeliveryLocation]=useState<string>('');
-    const [isDeliveryOptionOpen,setIsDeliveryOptionOpen]=useState(false);
+const CartSidebar = ({
+  isOpen,
+  onClose,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+}) => {
+  const [isDeliveryWarningOpen, setIsDeliveryWarningOpen] = useState(false);
+  const { cartItems, updateQuantity, removeFromCart } = useCart();
+  const sidebarRef = useRef<HTMLDivElement>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isNotificationVisible, setIsNotificationVisible] = useState(false);
+  const [comment, setComment] = useState("");
+  const [deliveryFee, setDeliveryFee] = useState<number>(0);
+  const [deliveryLocation, setDeliveryLocation] = useState<string>("");
+  const [isDeliveryOptionOpen, setIsDeliveryOptionOpen] = useState(false);
 
-    const total: number=cartItems.reduce(
-        (acc: number,item): number => acc+(item.product.price*item.quantity),
-        0
-    )+deliveryFee;
+  const location = useLocation();
+  const aliadoId = (() => {
+    const path = location.pathname;
+    const match = path.match(/aliados\/(\d+)/);
+    return match ? Number(match[1]) : null;
+  })();
 
-    useEffect((): () => void => {
-        const handleClickOutside: (event: MouseEvent) => void=(event: MouseEvent): void => {
-            if(
-                sidebarRef.current&&
-                !sidebarRef.current.contains(event.target as Node)&&
-                !isDeliveryOptionOpen
-            ) {
-                onClose();
-            }
-        };
+  const total: number =
+    cartItems.reduce(
+      (acc, item) => acc + item.product.price * item.quantity,
+      0
+    ) + deliveryFee;
 
-        if(isOpen) {
-            document.addEventListener('mousedown',handleClickOutside);
-        } else {
-            document.removeEventListener('mousedown',handleClickOutside);
-        }
-
-        return (): void => {
-            document.removeEventListener('mousedown',handleClickOutside);
-        };
-    },[isOpen,onClose,isDeliveryOptionOpen]);
-
-    const handlePaymentClick: () => void=(): void => {
-        const orderSummary: string=cartItems.map(item => `${item.quantity} ${item.product.title}`).join(', ');
-        const orderInfo={
-            orderSummary,
-            monto: total.toFixed(2),
-            comment,
-            delivery: deliveryLocation!==''? deliveryLocation:'No',
-        };
-        localStorage.setItem('cartInfo',JSON.stringify(orderInfo));
-        setIsModalOpen(true);
-        onClose();
+  // ✅ Solo cerrar con Escape, no con clic fuera
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent): void => {
+      if (event.key === "Escape") onClose();
     };
 
-    const handleConfirm: (referenceNumber: string) => void=(referenceNumber: string): void => {
-        setIsModalOpen(false);
-        setIsNotificationVisible(true);
+    if (isOpen) {
+      document.addEventListener("keydown", handleEscape);
+    }
 
-        setTimeout((): void => setIsNotificationVisible(false),5000);
+    return () => {
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [isOpen, onClose]);
 
-        setTimeout((): void => {
-            const cartInfo=JSON.parse(localStorage.getItem('cartInfo')!);
-            const phoneNumber=`${data?.paydates?.phone}`;
-            const message=`Hola ${data?.contactData[0]?.name}, aqui dejo mi pedido y referencia, quedo atento.\n\nDetalles del pedido:\n${cartInfo.orderSummary}\nMonto: USD - ${parseFloat(cartInfo.monto).toFixed(2)} $\nComentario: ${cartInfo.comment}\nServicio de delivery: ${cartInfo.delivery}\nReferencia: ${referenceNumber}`;
-            const whatsappLink=`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+  const handlePaymentClick = (): void => {
+    if (!deliveryLocation || cartItems.length === 0) {
+      // Abrimos modal de advertencia sin cerrar el sidebar
+      setIsDeliveryWarningOpen(true);
+      return;
+    }
 
-            window.open(whatsappLink,'_blank');
-            localStorage.removeItem('cartInfo');
-        },5000);
+    const orderSummary = cartItems
+      .map((item) => `${item.quantity} ${item.product.title}`)
+      .join(", ");
+
+    const orderInfo = {
+      orderSummary,
+      monto: total.toFixed(2),
+      comment,
+      delivery: deliveryLocation,
     };
 
-    const handleRemoveDelivery=() => {
-        setDeliveryFee(0);
-        setDeliveryLocation('');
-    };
+    localStorage.setItem("cartInfo", JSON.stringify(orderInfo));
+    setIsModalOpen(true);
+    onClose(); // Solo cerramos el sidebar cuando se abre PaymentModal
+  };
 
-    return (
-        <>
-            <div ref={sidebarRef} className={`fixed z-40 top-14 right-0 h-auto w-80 border-2 border-t-0 rounded-lg rounded-t-none border-primary text-gray-300 bg-[#000000] shadow-lg transition-transform transform ${isOpen? 'translate-x-0':'translate-x-full'}`}>
-                <div className='flex flex-row justify-between items-center p-4 absolute right-0'>
-                    <CloseCartIcon onClick={onClose} />
+  const handleConfirm = (referenceNumber: string): void => {
+    setIsModalOpen(false);
+    setIsNotificationVisible(true);
+
+    const cartInfo = JSON.parse(localStorage.getItem("cartInfo")!);
+    const phoneNumber = `${data?.paydates?.phone}`;
+    const message = `Hola ${
+      data?.contactData[0]?.name
+    }, aqui dejo mi pedido y referencia.\n\nDetalles:\n${
+      cartInfo.orderSummary
+    }\nMonto: USD ${parseFloat(cartInfo.monto).toFixed(2)}\nComentario: ${
+      cartInfo.comment
+    }\nDelivery: ${cartInfo.delivery}\nReferencia: ${referenceNumber}`;
+
+    const whatsappLink = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
+      message
+    )}`;
+    window.open(whatsappLink, "_blank");
+
+    setTimeout(() => {
+      localStorage.removeItem("cartInfo");
+      setIsNotificationVisible(false);
+      window.location.reload();
+    }, 4000);
+  };
+
+  const handleRemoveDelivery = () => {
+    setDeliveryFee(0);
+    setDeliveryLocation("");
+  };
+
+  return (
+    <>
+      {/* Fondo oscuro solo decorativo, no cierra sidebar */}
+      {isOpen && <div className="fixed inset-0 bg-black opacity-50 z-40" />}
+
+      {/* Sidebar */}
+      <div
+        ref={sidebarRef}
+        className={`fixed z-50 top-14 right-0 h-[calc(100vh-3.5rem)] w-full sm:w-[380px] border-2 border-t-0 rounded-lg rounded-t-none border-primary text-gray-300 bg-black shadow-lg transition-transform duration-300 ease-in-out transform ${
+          isOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        {/* Header */}
+        <div className="flex justify-between items-center p-4 border-b border-gray-700">
+          <h2 className="text-xl font-bold">Tu pedido</h2>
+          <button onClick={onClose} >
+            <CloseCartIcon />
+          </button>
+        </div>
+
+        {/* Contenido */}
+        <div className="p-4 flex flex-col gap-4 overflow-y-auto h-[80%]">
+          <ButtonDelivery
+            color="w-full text-lg mt-2"
+            onClick={() => setIsDeliveryOptionOpen(true)}
+            label="Cambiar servicio de delivery"
+          />
+
+          <ul className="overflow-y-auto max-h-60">
+            {cartItems.length > 0 ? (
+              cartItems.map((item) => (
+                <CartItem
+                  key={item.product.id}
+                  item={item}
+                  updateQuantity={updateQuantity}
+                  removeFromCart={removeFromCart}
+                />
+              ))
+            ) : (
+              <p className="text-center text-gray-400 mt-4">
+                Tu carrito está vacío.
+              </p>
+            )}
+
+            {deliveryLocation && (
+              <li className="flex justify-between items-center mt-2">
+                <p className="font-semibold">Delivery - {deliveryLocation}</p>
+                <div className="flex flex-row justify-between items-center">
+                  <button
+                    onClick={handleRemoveDelivery}
+                    className="text-red-500 px-2"
+                  >
+                    <TbBasketCancel className="h-5 w-5" />
+                  </button>
+                  <span>${deliveryFee.toFixed(2)}</span>
                 </div>
-                <div className="pt-2 pl-4">
-                    <ButtonDelivery color="w-full text-lg mt-2" onClick={(): void => setIsDeliveryOptionOpen(true)} label={'Cambiar servicio de delivery'} />
-                </div>
-                <div className="p-4 pt-4">
-                    <h2 className="text-xl font-bold mb-4">Cesta de pedido</h2>
-                    <ul className='overflow-y-auto max-h-60'>
-                        {cartItems.map(item => (
-                            <CartItem key={item.product.id} item={item} updateQuantity={updateQuantity} removeFromCart={removeFromCart} />
-                        ))}
-                        {deliveryLocation&&(
-                            <li className='flex flex-row justify-between items-center'>
-                                <div>
-                                    <p className="font-semibold">Services - {deliveryLocation}</p>
-                                    <span>USD - {deliveryFee.toFixed(2)} $</span>
-                                </div>
-                                <button onClick={handleRemoveDelivery} className="text-red-500  px-2"><TbBasketCancel className='h-5 w-5' /></button>
-                            </li>
-                        )}
-                    </ul>
-                    <CartTotal total={total} />
-                    <CartCommentsComponent comment={comment} setComment={setComment} />
-                    <Button color="w-full text-lg" onClick={handlePaymentClick} label={'Generar pedido'} />
-                </div>
-            </div>
-            {isModalOpen&&<PaymentModal total={total} onConfirm={handleConfirm} onClose={(): void => setIsModalOpen(false)} />}
-            {isNotificationVisible&&<NotificationComponent />}
-            {isDeliveryOptionOpen&&<DeliveryOptionModal isOpen={isDeliveryOptionOpen} onClose={(): void => setIsDeliveryOptionOpen(false)} setDeliveryFee={setDeliveryFee} setDeliveryLocation={setDeliveryLocation} />}
-        </>
-    );
+              </li>
+            )}
+          </ul>
+
+          <CartTotal total={total} />
+          <CartCommentsComponent comment={comment} setComment={setComment} />
+
+          <Button
+            color="w-full text-lg bg-secundary text-black"
+            onClick={handlePaymentClick}
+            label="Generar pedido"
+          />
+        </div>
+      </div>
+
+      {/* Modales */}
+      {isModalOpen && (
+        <PaymentModal
+          total={total}
+          onConfirm={handleConfirm}
+          onClose={() => setIsModalOpen(false)}
+        />
+      )}
+
+      {isNotificationVisible && <NotificationComponent />}
+
+      {isDeliveryOptionOpen && aliadoId && (
+        <DeliveryOptionModal
+          aliadoId={aliadoId}
+          isOpen={isDeliveryOptionOpen}
+          onClose={() => setIsDeliveryOptionOpen(false)}
+          setDeliveryFee={setDeliveryFee}
+          setDeliveryLocation={setDeliveryLocation}
+        />
+      )}
+
+      {isDeliveryWarningOpen && (
+        <DeliveryWarningModal
+          isOpen={isDeliveryWarningOpen}
+          onClose={() => setIsDeliveryWarningOpen(false)}
+        />
+      )}
+    </>
+  );
 };
 
 export default CartSidebar;

@@ -1,9 +1,21 @@
-
-const Button=({onClick,label,color}: {onClick: () => void,label?: string; color?: string}) => {
-    return <button className={`  text-gray-300 active:text-primary active:bg-tertiary border-primary p-2 rounded-lg bg-fourth font-semibold mt-4 text-sm ${color}`} onClick={onClick}>
-        {label}
-
-    </button>;
+interface ButtonProps {
+  label?: string;
+  onClick: () => void;
+  color?: string;
+  className?: string;
 }
+
+const Button = ({ label, onClick, color, className }: ButtonProps) => {
+  return (
+    <button
+      onClick={onClick}
+      className={`px-4 py-2 rounded-md font-semibold transition-all duration-300 
+      ${color ?? " text-white hover:bg-secundary"} 
+      ${className ?? ""}`}
+    >
+      {label}
+    </button>
+  );
+};
 
 export default Button;

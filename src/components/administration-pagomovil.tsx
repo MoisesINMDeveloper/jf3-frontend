@@ -83,7 +83,7 @@ export const PanelAdminMobilePayment = () => {
   ] as const;
 
   return (
-    <div className="mx-2 mb-4 p-4 bg-transparent border-primary border-2 rounded-sm">
+    <div className="mx-2 mb-4 p-4 bg-transparent border-secundary border-2 rounded-sm">
       <h1 className="text-white text-2xl text-center mb-4">
         Administrador de Pago Móvil
       </h1>
@@ -116,14 +116,14 @@ export const PanelAdminMobilePayment = () => {
         <div className="flex justify-center mt-5">
           {editPaymentOption ? (
             <button
-              className="bg-greenButton text-white p-2 rounded w-24"
+              className="bg-green-400 text-white p-2 rounded w-24"
               onClick={handleUpdatePaymentOption}
             >
               Actualizar
             </button>
           ) : (
             <button
-              className="bg-primary text-white p-2 rounded w-24"
+              className="bg-green-400 text-black p-2 rounded w-24"
               onClick={handleCreatePaymentOption}
             >
               Agregar
@@ -138,20 +138,20 @@ export const PanelAdminMobilePayment = () => {
         {paymentOptions.length > 0 ? (
           paymentOptions.map((option) => (
             <div key={option.id}>
-              <div className="bg-transparent border-primary border-2 rounded-md p-4 mb-2 text-white flex flex-col gap-4">
+              <div className="bg-transparent border-secundary border-2 rounded-md p-4 mb-2 text-white flex flex-col gap-4">
                 <p>
                   {option.bank} - {option.code} - {option.cedula} - {option.phone}
                 </p>
               </div>
               <div className="flex justify-center mt-5 gap-4">
                 <button
-                  className="bg-tertiary text-white p-2 rounded mr-2 w-24"
+                  className="bg-secundary text-black p-2 rounded mr-2 w-24"
                   onClick={() => setEditPaymentOption(option)}
                 >
                   Editar
                 </button>
                 <button
-                  className="bg-redButton text-white p-2 rounded w-24"
+                  className="bg-fourth text-white p-2 rounded w-24"
                   onClick={() => handleDeletePaymentOption(option.id)}
                 >
                   Eliminar

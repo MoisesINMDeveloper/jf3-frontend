@@ -273,12 +273,12 @@ const data: {
   },
   extraInfo:[
     {
-      name: "WhatsApp Cafetín",
+      name: "WhatsApp JF3",
       link: "https://wa.me/4124676968",
       icon: FaWhatsapp,
     },
     {
-      name: "Cafetín UJAP",
+      name: "JF3 DELIVERY SERVICE",
       link: "https://www.instagram.com/cafetinujap",
       icon: FaInstagram,
     }
@@ -290,7 +290,7 @@ const data: {
       icon: FaInstagram,
     },
     {
-      name: "SOPORTE JF3",
+      name: "WhatsApp JF3",
       link: "https://wa.me/4124676968",
       icon: FaWhatsapp,
     },

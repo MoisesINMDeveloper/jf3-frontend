@@ -13,7 +13,7 @@ export default function App() {
 
   return (
     <Router>
-      <div className="flex flex-col min-h-screen relative bg-primary">
+      <div className="flex flex-col min-h-screen relative bg-primary w-[100vw]">
         <Navbar setActiveView={setActiveView} />
         <main className="relative flex-1">
           <Routes>

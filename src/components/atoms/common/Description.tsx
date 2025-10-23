@@ -1,6 +1,9 @@
-const Description=({text}: {text: string}) => {
-    return <p className=" text-gray-300 text-justify text-md font-semibold mt-2">{text}
-    </p>;
-}
+const Description = ({ text, color }: { text: string; color?: string }) => {
+  return (
+    <p className={`text-[16px] text-justify ${color ?? "text-gray-400"} leading-relaxed`}>
+      {text}
+    </p>
+  );
+};
 
 export default Description;

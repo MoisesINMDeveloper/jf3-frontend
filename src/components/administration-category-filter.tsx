@@ -7,7 +7,7 @@ interface CategoryFilterProps {
 const CategoryFilter = ({ categories, activeCategory, handleFilter }: CategoryFilterProps) => (
     <div className="flex flex-wrap justify-center items-center gap-4 mb-6">
         <button
-            className={`px-4 py-2 rounded ${activeCategory === null ? "bg-primary text-white" : "bg-gray-600"}`}
+            className={`px-4 py-2 rounded ${activeCategory === null ? "bg-secundary text-white" : "bg-gray-600"}`}
             onClick={() => handleFilter(null)}
         >
             Todas
@@ -15,7 +15,7 @@ const CategoryFilter = ({ categories, activeCategory, handleFilter }: CategoryFi
         {categories.map(category => (
             <button
                 key={category.id}
-                className={`px-4 py-2 rounded ${activeCategory === category.id ? "bg-primary text-white" : "bg-gray-600"}`}
+                className={`px-4 py-2 rounded ${activeCategory === category.id ? "bg-secundary text-white" : "bg-gray-600"}`}
                 onClick={() => handleFilter(category.id)}
             >
                 {category.name}

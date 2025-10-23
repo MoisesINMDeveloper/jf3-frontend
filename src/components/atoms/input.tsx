@@ -9,7 +9,7 @@ interface InputLoginProps {
 export const InputLogin = ({ type, name, placeholder, value, onChange }: InputLoginProps) => {
   return (
     <input
-      className="w-[240px] h-[50px] rounded-md border-[1px] outline-none border-primary text-white placeholder:text-gray-400 px-2 bg-transparent"
+      className="w-[240px] h-[50px] rounded-md border-[1px] outline-none border-secundary text-white placeholder:text-gray-400 px-2 bg-transparent"
       type={type}
       name={name}
       placeholder={placeholder}

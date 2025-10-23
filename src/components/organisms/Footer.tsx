@@ -7,7 +7,7 @@ const Footer=() => {
         <div className='flex flex-col items-center text-center space-y-4'>
           <div className=''>
             <h1 className='text-xl text-secundary font-bold'> {data?.contactData[0]?.name}</h1>
-            <p className='mt-1 text-sm text-tertiary'>La mejor comida rápida en la ciudad</p>
+            <p className='mt-1 text-sm text-tertiary'>El mejor servicio de delivery de toda la ciudad.</p>
           </div>
           <div className='text-tertiary  text-sm'>
             <p>&copy; 2024 <span>
@@ -20,7 +20,7 @@ const Footer=() => {
               {data?.contactData.map((item: ContactItem,index: number) => (
                 <li
                   key={index}
-                  className='p-2 flex text-secundary active:text-red items-center gap-4 text-secundary'
+                  className='p-2 flex active:text-red items-center gap-4 text-secundary'
                 >
                   {item.icon&&<item.icon className='mr-2 h-8 w-8' />}
                 </li>

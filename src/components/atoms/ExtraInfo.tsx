@@ -1,20 +1,24 @@
-import  contactData, { type ContactItem }  from '../../constant/data';
+import contactData, { type ContactItem } from '../../constant/data';
 
-const ItemsMenu = () => {
+const ExtraInfo = () => {
+  if (!contactData?.extraInfo) return null;
+
   return (
-    <div>
-      <ul className='flex flex-row items-center justify-center gap-4'>
-        {contactData?.extraInfo.map((item: ContactItem, index: number) => (
-          <li className='flex flex-row items-center text-tertiary gap-2' key={index}>
-            <a href={item.link} target='_blank' rel='noopener noreferrer'>
-              {item.name}
-            </a>
-            {item.icon && <item.icon className='w-6 h-6' />}
-          </li>
-        ))}
-      </ul>
+    <div className="flex flex-row items-center justify-center gap-4 p-2">
+      {contactData.extraInfo.map((item: ContactItem, index: number) => (
+        <a
+          href={item.link}
+          target="_blank"
+          rel="noopener noreferrer"
+          key={index}
+          className="flex items-center text-secundary gap-2"
+        >
+          {item.icon && <item.icon className="w-6 h-6" />}
+          <span className="hidden md:inline">{item.name}</span>
+        </a>
+      ))}
     </div>
   );
 };
 
-export default ItemsMenu;
+export default ExtraInfo;
