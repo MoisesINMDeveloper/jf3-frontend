@@ -5,9 +5,10 @@ import {
   updatePaydate,
   deletePaydate,
   type Paydate,
-  type PaydateResponse,
 } from "../constant/Api";
 import { InputLogin } from "./atoms/input";
+
+type PaydateResponse = { paydates?: Paydate[] };
 
 export const PanelAdminMobilePayment = () => {
   const [paymentOptions, setPaymentOptions] = useState<Paydate[]>([]);
